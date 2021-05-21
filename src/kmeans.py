@@ -1,7 +1,6 @@
 from PIL import Image
 import random
 import numpy
-from sklearn.cluster import KMeans
 from IPython.display import display
 
 im = Image.open('kitten.jpg').convert('RGB')
@@ -10,12 +9,8 @@ k = 4  # number of clusters
 r, g, b = im.getchannel(0), im.getchannel(
     1), im.getchannel(2)  # Split into 3 channels
 
-rm = numpy.array(r)
-gm = numpy.array(g)
-bm = numpy.array(b)
 
-
-def totuple(a):
+def totuple(a): #tuple utility function
     try:
         return tuple(totuple(i) for i in a)
     except TypeError:
@@ -43,14 +38,12 @@ def kmeans(m, k):
 
     return totuple(c)
 
+rf = kmeans(numpy.array(r), k)  # new palette (R1, R2, .... Rk) 
+gf = kmeans(numpy.array(g), k)  # new palette (G1, G2, .... Gk)
+bf = kmeans(numpy.array(b), k)  # new palette (B1, B2, .... Bk)
 
-rf = kmeans(rm, k)  # new palette (R1, R2, .... Rk) 
-gf = kmeans(gm, k)  # new palette (G1, G2, .... Gk)
-bf = kmeans(bm, k)  # new palette (B1, B2, .... Bk)
-
-#instead of log255 =8 bits per channel, we can use logk bits per channel, per pixel
-
-# for each pixel find and assign the closest new color from its channel palette
+#instead of log255 =8 bits per channel, use logk bits per channel, per pixel
+#for each pixel find and assign the closest new color from its channel palette
 
 for i in range(im.width):
     for j in range(im.height):
@@ -60,21 +53,21 @@ for i in range(im.width):
             # print(pixel)
             closest = 5000
             ind = 0
-            for z in range(k):
+            for z in range(k): #update red channel
                 if abs(pixel[0]-rf[z]) < closest:
                     closest = abs(pixel[0]-rf[z])
                     ind = z
             newredvalue = int(rf[ind])
             closest = 5000
             ind = 0
-            for z in range(k):
+            for z in range(k): #update green channel
                 if abs(pixel[1]-gf[z]) < closest:
                     closest = abs(pixel[1]-gf[z])
                     ind = z
             newgreenvalue = int(gf[ind])
             closest = 5000
             ind = 0
-            for z in range(k):
+            for z in range(k): #update blue channel
                 if abs(pixel[2]-bf[z]) < closest:
                     closest = abs(pixel[2]-bf[z])
                     ind = z
